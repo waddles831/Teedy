@@ -24,6 +24,10 @@
     font-size: 90%;
     color: #666;
   }
+
+  .guest-login-section {
+    margin-top: 16px;
+  }
 </style>
 <div class="row vertical-center">
   <div class="col-sm-6 col-xs-12 login-box">
@@ -74,11 +78,11 @@
             </div>
           </div>
 
-          <p class="text-center" ng-if="app.guest_login">&nbsp;</p>
-
-          <button type="submit" class="btn btn-default btn-block" ng-if="app.guest_login" ng-click="loginAsGuest()">
-            <span class="fas fa-user"></span> {{ 'login.login_as_guest' | translate }}
-          </button>
+          <div class="guest-login-section">
+            <button type="button" class="btn btn-default btn-block" ng-click="loginAsGuest()" ng-disabled="!app || !app.guest_login">
+              <span class="fas fa-user"></span> {{ 'login.login_as_guest' | translate }}
+            </button>
+          </div>
         </form>
       </div>
     </div>
