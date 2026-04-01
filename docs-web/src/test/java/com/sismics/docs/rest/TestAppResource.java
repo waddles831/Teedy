@@ -57,7 +57,7 @@ public class TestAppResource extends BaseJerseyTest {
         Long totalMemory = json.getJsonNumber("total_memory").longValue();
         Assert.assertTrue(totalMemory > 0 && totalMemory > freeMemory);
         Assert.assertEquals(0, json.getJsonNumber("queued_tasks").intValue());
-        Assert.assertFalse(json.getBoolean("guest_login"));
+        Assert.assertTrue(json.getBoolean("guest_login"));
         Assert.assertFalse(json.getBoolean("ocr_enabled"));
         Assert.assertEquals("eng", json.getString("default_language"));
         Assert.assertTrue(json.containsKey("global_storage_current"));
@@ -140,20 +140,10 @@ public class TestAppResource extends BaseJerseyTest {
         // Login admin
         String adminToken = adminToken();
 
-        // Try to login as guest
-        Response response = target().path("/user/login").request()
-                .post(Entity.form(new Form()
-                        .param("username", "guest")));
-        Assert.assertEquals(Status.FORBIDDEN.getStatusCode(), response.getStatus());
-
-        // Enable guest login
-        target().path("/app/guest_login").request()
-                .cookie(TokenBasedSecurityFilter.COOKIE_NAME, adminToken)
-                .post(Entity.form(new Form()
-                        .param("enabled", "true")), JsonObject.class);
-
         // Login as guest
         String guestToken = clientUtil.login("guest", "", false);
+
+        Response response;
 
         // Guest cannot delete himself
         response = target().path("/user").request()
@@ -196,11 +186,23 @@ public class TestAppResource extends BaseJerseyTest {
                 .cookie(TokenBasedSecurityFilter.COOKIE_NAME, guestToken)
                 .get(JsonObject.class);
 
-        // Disable guest login (clean up state)
+        // Disable guest login
         target().path("/app/guest_login").request()
                 .cookie(TokenBasedSecurityFilter.COOKIE_NAME, adminToken)
                 .post(Entity.form(new Form()
                         .param("enabled", "false")), JsonObject.class);
+
+        // Guest login should be rejected once disabled
+        response = target().path("/user/login").request()
+                .post(Entity.form(new Form()
+                        .param("username", "guest")));
+        Assert.assertEquals(Status.FORBIDDEN.getStatusCode(), response.getStatus());
+
+        // Re-enable guest login to keep test state aligned with the default configuration
+        target().path("/app/guest_login").request()
+                .cookie(TokenBasedSecurityFilter.COOKIE_NAME, adminToken)
+                .post(Entity.form(new Form()
+                        .param("enabled", "true")), JsonObject.class);
     }
 
     /**
