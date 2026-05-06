@@ -1,8 +1,11 @@
+name: Maven CI/CD
+
 on:
   push:
     branches: [master]
     tags: [v*]
   workflow_dispatch:
+  
 jobs:
   build_and_publish:
     runs-on: ubuntu-latest
@@ -15,7 +18,7 @@ jobs:
           distribution: "temurin"
           cache: maven
       - name: Install test dependencies
-        run: sudo apt-get update && sudo apt-get -y -q --no-install-recommends install ffmpeg me
+        run: sudo apt-get update && sudo apt-get -y -q --no-install-recommends install ffmpeg mediainfo tesseract-ocr tesseract-ocr-deu
       - name: Build with Maven
         run: mvn --batch-mode -Pprod clean install
       - name: Upload war artifact
