@@ -6,6 +6,11 @@ pipeline {
                 sh 'mvn clean'
             }
         }
+        stage('Install') {   
+            steps {
+                sh 'mvn install -DskipTests -Dpmd.skip=true -Dcpd.skip=true -Dcheckstyle.skip=true'
+            }
+        }
         stage('Compile') {
             steps {
                 sh 'mvn compile'
