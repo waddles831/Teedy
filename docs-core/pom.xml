@@ -236,4 +236,8 @@
     </resources>
   </build>
 
+  <reporting>
+    <outputDirectory>../target/site/${project.artifactId}</outputDirectory>
+  </reporting>
+
 </project>

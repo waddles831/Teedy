@@ -69,4 +69,10 @@ public class TestMimeTypeUtil extends BaseTest {
         path = Paths.get(getResource(FILE_MP4).toURI());
         Assert.assertEquals(MimeType.VIDEO_MP4, MimeTypeUtil.guessMimeType(path, FILE_MP4));
     }
+
+    @Test
+    public void getFileExtensionTest() {
+        Assert.assertEquals("pdf", MimeTypeUtil.getFileExtension(MimeType.APPLICATION_PDF));
+        Assert.assertEquals("bin", MimeTypeUtil.getFileExtension("application/x-custom"));
+    }
 }

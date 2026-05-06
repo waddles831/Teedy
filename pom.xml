@@ -58,6 +58,8 @@
     <!-- Plugins version -->
     <org.apache.maven.plugins.maven-antrun-plugin.version>3.1.0</org.apache.maven.plugins.maven-antrun-plugin.version>
     <org.apache.maven.plugins.maven-jar-plugin.version>3.3.0</org.apache.maven.plugins.maven-jar-plugin.version>
+    <org.apache.maven.plugins.maven-project-info-reports-plugin.version>3.9.0</org.apache.maven.plugins.maven-project-info-reports-plugin.version>
+    <org.apache.maven.plugins.maven-site-plugin.version>3.12.1</org.apache.maven.plugins.maven-site-plugin.version>
     <org.apache.maven.plugins.maven-war-plugin.version>3.3.2</org.apache.maven.plugins.maven-war-plugin.version>
     <org.apache.maven.plugins.maven-surefire-plugin.version>3.0.0</org.apache.maven.plugins.maven-surefire-plugin.version>
     <org.eclipse.jetty.jetty-maven-plugin.version>11.0.20</org.eclipse.jetty.jetty-maven-plugin.version>
@@ -83,6 +85,27 @@
 
   <build>
     <plugins>
+      <plugin> 
+        <groupId>org.jacoco</groupId> 
+        <artifactId>jacoco-maven-plugin</artifactId> 
+        <version>0.8.9</version> 
+        <executions> 
+          <execution> 
+            <goals> 
+              <goal>prepare-agent</goal> 
+            </goals> 
+          </execution> 
+          <!-- attached to Maven test phase --> 
+          <execution> 
+            <id>report</id> 
+            <phase>test</phase> 
+            <goals> 
+              <goal>report</goal> 
+            </goals> 
+          </execution> 
+        </executions> 
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
@@ -103,18 +126,42 @@
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>${org.apache.maven.plugins.maven-site-plugin.version}</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${org.apache.maven.plugins.maven-surefire-plugin.version}</version>
         <configuration>
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
         </configuration>
-      </plugin>
+      </plugin> 
 
       <plugin>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
         <version>${org.eclipse.jetty.jetty-maven-plugin.version}</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>3.21.0</version> <!-- 建议使用较新版本 -->
+        <configuration>
+          <rulesets>
+            <ruleset>customize-rules.xml</ruleset>
+          </rulesets>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
@@ -124,6 +171,60 @@
     <module>docs-web-common</module>
     <module>docs-web</module>
   </modules>
+
+  <reporting>
+    <plugins>
+      <plugin> 
+        <groupId>org.apache.maven.plugins</groupId> 
+        <artifactId>maven-surefire-report-plugin</artifactId> 
+        <version>3.0.0</version> 
+        <reportSets> 
+          <reportSet> 
+            <id>aggregate</id> 
+            <inherited>false</inherited> 
+            <reports> 
+              <report>report</report> 
+            </reports> 
+            <configuration> 
+              <aggregate>true</aggregate> 
+            </configuration> 
+          </reportSet> 
+        </reportSets> 
+      </plugin>
+
+      <plugin> 
+        <groupId>org.jacoco</groupId> 
+        <artifactId>jacoco-maven-plugin</artifactId> 
+        <version>0.8.9</version> 
+        <reportSets> 
+          <reportSet> 
+            <id>aggregate</id> 
+            <inherited>false</inherited> 
+            <reports> 
+              <report>report-aggregate</report> 
+            </reports> 
+          </reportSet> 
+        </reportSets> 
+      </plugin>
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>${org.apache.maven.plugins.maven-project-info-reports-plugin.version}</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>3.21.0</version>
+        <configuration>
+          <rulesets>
+            <ruleset>customize-rules.xml</ruleset>
+          </rulesets>
+        </configuration>
+      </plugin>     
+    </plugins>    
+  </reporting>
 
   <dependencyManagement>
     <dependencies>
@@ -252,6 +353,12 @@
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>${junit.junit.version}</version>
+      </dependency>
+
+      <dependency> 
+        <groupId>org.junit.jupiter</groupId> 
+        <artifactId>junit-jupiter</artifactId> 
+        <version>5.7.1</version> 
       </dependency>
 
       <dependency>

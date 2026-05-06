@@ -274,4 +274,8 @@
       </build>
     </profile>
   </profiles>
+
+  <reporting>
+    <outputDirectory>../target/site/${project.artifactId}</outputDirectory>
+  </reporting>
 </project>
