@@ -46,6 +46,42 @@ pipeline {
                 sh 'mvn package -DskipTests'
             }
         }
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t waddles831/teedy .'
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+
+                    sh '''
+                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+
+                    docker push waddles831/teedy
+                    '''
+                }
+            }
+        }
+
+        stage('Run Containers') {
+            steps {
+
+                sh 'docker rm -f teedy1 teedy2 teedy3 || true'
+
+                sh 'docker run -d --name teedy1 -p 8082:8080 waddles831/teedy'
+
+                sh 'docker run -d --name teedy2 -p 8083:8080 waddles831/teedy'
+
+                sh 'docker run -d --name teedy3 -p 8084:8080 waddles831/teedy'
+            }
+        }
     }
     post {
         always {
