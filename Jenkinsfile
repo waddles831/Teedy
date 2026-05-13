@@ -1,13 +1,18 @@
 pipeline {
     agent any
     stages {
-        stage('Docker Build') {
+        stage('Package') {
+            steps {
+                sh 'mvn package -DskipTests'
+            }
+        }
+        stage('Building image') {
             steps {
                 sh 'docker build -t waddles831/teedy .'
             }
         }
 
-        stage('Docker Push') {
+        stage('Upload Image') {
             steps {
 
                 withCredentials([usernamePassword(
